@@ -1,0 +1,400 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 48;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		7B383BE71EF7F57A00FEDB5F /* Float16.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B383BE61EF7F57800FEDB5F /* Float16.swift */; };
+		7B383BE81EF7F57C00FEDB5F /* MPSImage+Floats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B383BE51EF7F57800FEDB5F /* MPSImage+Floats.swift */; };
+		7B383BEB1EF7FD4F00FEDB5F /* UIImage+MTLTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B383BE91EF7FD4000FEDB5F /* UIImage+MTLTexture.swift */; };
+		7B383BEC1EF7FD5200FEDB5F /* UIImage+RawBytes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B383BEA1EF7FD4000FEDB5F /* UIImage+RawBytes.swift */; };
+		7B383BEE1EF7FD8E00FEDB5F /* MTLTexture+Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B383BED1EF7FD8A00FEDB5F /* MTLTexture+Array.swift */; };
+		7B383BF01EF7FE7B00FEDB5F /* TextureLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B383BEF1EF7FE7900FEDB5F /* TextureLoader.swift */; };
+		7B383BF21EF7FEA600FEDB5F /* dog416.png in Resources */ = {isa = PBXBuildFile; fileRef = 7B383BF11EF7FEA400FEDB5F /* dog416.png */; };
+		7B3F88121EF82C34002A4D6D /* Debugging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3F88111EF82C30002A4D6D /* Debugging.swift */; };
+		7B3F881C1EF94BBD002A4D6D /* conv1.bin in Resources */ = {isa = PBXBuildFile; fileRef = 7B3F88191EF94BBB002A4D6D /* conv1.bin */; };
+		7B3F881D1EF94BBD002A4D6D /* conv2.bin in Resources */ = {isa = PBXBuildFile; fileRef = 7B3F88181EF94BBB002A4D6D /* conv2.bin */; };
+		7B3F881E1EF94BBD002A4D6D /* conv3.bin in Resources */ = {isa = PBXBuildFile; fileRef = 7B3F88171EF94BBB002A4D6D /* conv3.bin */; };
+		7B3F881F1EF94BBD002A4D6D /* conv4.bin in Resources */ = {isa = PBXBuildFile; fileRef = 7B3F88141EF94BBB002A4D6D /* conv4.bin */; };
+		7B3F88201EF94BBD002A4D6D /* conv5.bin in Resources */ = {isa = PBXBuildFile; fileRef = 7B3F88131EF94BBA002A4D6D /* conv5.bin */; };
+		7B3F88211EF94BBD002A4D6D /* conv6.bin in Resources */ = {isa = PBXBuildFile; fileRef = 7B3F881B1EF94BBB002A4D6D /* conv6.bin */; };
+		7B3F88221EF94BBD002A4D6D /* conv7.bin in Resources */ = {isa = PBXBuildFile; fileRef = 7B3F88151EF94BBB002A4D6D /* conv7.bin */; };
+		7B3F88231EF94BBD002A4D6D /* conv8.bin in Resources */ = {isa = PBXBuildFile; fileRef = 7B3F881A1EF94BBB002A4D6D /* conv8.bin */; };
+		7B3F88241EF94BBD002A4D6D /* conv9.bin in Resources */ = {isa = PBXBuildFile; fileRef = 7B3F88161EF94BBB002A4D6D /* conv9.bin */; };
+		7B9F8D331EF2CC4700F913BD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9F8D321EF2CC4700F913BD /* AppDelegate.swift */; };
+		7B9F8D351EF2CC4700F913BD /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9F8D341EF2CC4700F913BD /* ViewController.swift */; };
+		7B9F8D381EF2CC4700F913BD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B9F8D361EF2CC4700F913BD /* Main.storyboard */; };
+		7B9F8D3A1EF2CC4700F913BD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7B9F8D391EF2CC4700F913BD /* Assets.xcassets */; };
+		7B9F8D461EF2CCF400F913BD /* BoundingBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9F8D441EF2CCF100F913BD /* BoundingBox.swift */; };
+		7B9F8D471EF2CCF400F913BD /* VideoCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9F8D451EF2CCF100F913BD /* VideoCapture.swift */; };
+		7B9F8D4C1EF2CDF100F913BD /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9F8D4B1EF2CDF000F913BD /* Helpers.swift */; };
+		7B9F8D4D1EF2CDF900F913BD /* YOLO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9F8D481EF2CD5800F913BD /* YOLO.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		7B383BE51EF7F57800FEDB5F /* MPSImage+Floats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MPSImage+Floats.swift"; sourceTree = "<group>"; };
+		7B383BE61EF7F57800FEDB5F /* Float16.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Float16.swift; sourceTree = "<group>"; };
+		7B383BE91EF7FD4000FEDB5F /* UIImage+MTLTexture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+MTLTexture.swift"; sourceTree = "<group>"; };
+		7B383BEA1EF7FD4000FEDB5F /* UIImage+RawBytes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+RawBytes.swift"; sourceTree = "<group>"; };
+		7B383BED1EF7FD8A00FEDB5F /* MTLTexture+Array.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MTLTexture+Array.swift"; sourceTree = "<group>"; };
+		7B383BEF1EF7FE7900FEDB5F /* TextureLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextureLoader.swift; sourceTree = "<group>"; };
+		7B383BF11EF7FEA400FEDB5F /* dog416.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = dog416.png; path = ../../Common/dog416.png; sourceTree = "<group>"; };
+		7B3F88111EF82C30002A4D6D /* Debugging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Debugging.swift; sourceTree = "<group>"; };
+		7B3F88131EF94BBA002A4D6D /* conv5.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = conv5.bin; sourceTree = "<group>"; };
+		7B3F88141EF94BBB002A4D6D /* conv4.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = conv4.bin; sourceTree = "<group>"; };
+		7B3F88151EF94BBB002A4D6D /* conv7.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = conv7.bin; sourceTree = "<group>"; };
+		7B3F88161EF94BBB002A4D6D /* conv9.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = conv9.bin; sourceTree = "<group>"; };
+		7B3F88171EF94BBB002A4D6D /* conv3.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = conv3.bin; sourceTree = "<group>"; };
+		7B3F88181EF94BBB002A4D6D /* conv2.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = conv2.bin; sourceTree = "<group>"; };
+		7B3F88191EF94BBB002A4D6D /* conv1.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = conv1.bin; sourceTree = "<group>"; };
+		7B3F881A1EF94BBB002A4D6D /* conv8.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = conv8.bin; sourceTree = "<group>"; };
+		7B3F881B1EF94BBB002A4D6D /* conv6.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = conv6.bin; sourceTree = "<group>"; };
+		7B9F8D2F1EF2CC4700F913BD /* TinyYOLO-NNGraph.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "TinyYOLO-NNGraph.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7B9F8D321EF2CC4700F913BD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = ../../Common/AppDelegate.swift; sourceTree = "<group>"; };
+		7B9F8D341EF2CC4700F913BD /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		7B9F8D371EF2CC4700F913BD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		7B9F8D391EF2CC4700F913BD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		7B9F8D3E1EF2CC4700F913BD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7B9F8D441EF2CCF100F913BD /* BoundingBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = BoundingBox.swift; path = ../../Common/BoundingBox.swift; sourceTree = "<group>"; };
+		7B9F8D451EF2CCF100F913BD /* VideoCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCapture.swift; sourceTree = "<group>"; };
+		7B9F8D481EF2CD5800F913BD /* YOLO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YOLO.swift; sourceTree = "<group>"; };
+		7B9F8D4B1EF2CDF000F913BD /* Helpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Helpers.swift; path = ../../Common/Helpers.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		7B9F8D2C1EF2CC4700F913BD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		7B9F8D261EF2CC4700F913BD = {
+			isa = PBXGroup;
+			children = (
+				7B9F8D311EF2CC4700F913BD /* TinyYOLO-NNGraph */,
+				7B9F8D4E1EF2CECB00F913BD /* Parameters */,
+				7B9F8D301EF2CC4700F913BD /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		7B9F8D301EF2CC4700F913BD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7B9F8D2F1EF2CC4700F913BD /* TinyYOLO-NNGraph.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7B9F8D311EF2CC4700F913BD /* TinyYOLO-NNGraph */ = {
+			isa = PBXGroup;
+			children = (
+				7B9F8D321EF2CC4700F913BD /* AppDelegate.swift */,
+				7B9F8D391EF2CC4700F913BD /* Assets.xcassets */,
+				7B9F8D441EF2CCF100F913BD /* BoundingBox.swift */,
+				7B3F88111EF82C30002A4D6D /* Debugging.swift */,
+				7B383BF11EF7FEA400FEDB5F /* dog416.png */,
+				7B383BE61EF7F57800FEDB5F /* Float16.swift */,
+				7B9F8D4B1EF2CDF000F913BD /* Helpers.swift */,
+				7B9F8D3E1EF2CC4700F913BD /* Info.plist */,
+				7B9F8D361EF2CC4700F913BD /* Main.storyboard */,
+				7B383BE51EF7F57800FEDB5F /* MPSImage+Floats.swift */,
+				7B383BED1EF7FD8A00FEDB5F /* MTLTexture+Array.swift */,
+				7B383BEF1EF7FE7900FEDB5F /* TextureLoader.swift */,
+				7B383BE91EF7FD4000FEDB5F /* UIImage+MTLTexture.swift */,
+				7B383BEA1EF7FD4000FEDB5F /* UIImage+RawBytes.swift */,
+				7B9F8D451EF2CCF100F913BD /* VideoCapture.swift */,
+				7B9F8D341EF2CC4700F913BD /* ViewController.swift */,
+				7B9F8D481EF2CD5800F913BD /* YOLO.swift */,
+			);
+			path = "TinyYOLO-NNGraph";
+			sourceTree = "<group>";
+		};
+		7B9F8D4E1EF2CECB00F913BD /* Parameters */ = {
+			isa = PBXGroup;
+			children = (
+				7B3F88191EF94BBB002A4D6D /* conv1.bin */,
+				7B3F88181EF94BBB002A4D6D /* conv2.bin */,
+				7B3F88171EF94BBB002A4D6D /* conv3.bin */,
+				7B3F88141EF94BBB002A4D6D /* conv4.bin */,
+				7B3F88131EF94BBA002A4D6D /* conv5.bin */,
+				7B3F881B1EF94BBB002A4D6D /* conv6.bin */,
+				7B3F88151EF94BBB002A4D6D /* conv7.bin */,
+				7B3F881A1EF94BBB002A4D6D /* conv8.bin */,
+				7B3F88161EF94BBB002A4D6D /* conv9.bin */,
+			);
+			path = Parameters;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		7B9F8D2E1EF2CC4700F913BD /* TinyYOLO-NNGraph */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7B9F8D411EF2CC4700F913BD /* Build configuration list for PBXNativeTarget "TinyYOLO-NNGraph" */;
+			buildPhases = (
+				7B9F8D2B1EF2CC4700F913BD /* Sources */,
+				7B9F8D2C1EF2CC4700F913BD /* Frameworks */,
+				7B9F8D2D1EF2CC4700F913BD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "TinyYOLO-NNGraph";
+			productName = "TinyYOLO-NNGraph";
+			productReference = 7B9F8D2F1EF2CC4700F913BD /* TinyYOLO-NNGraph.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		7B9F8D271EF2CC4700F913BD /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0900;
+				LastUpgradeCheck = 0900;
+				ORGANIZATIONNAME = MachineThink;
+				TargetAttributes = {
+					7B9F8D2E1EF2CC4700F913BD = {
+						CreatedOnToolsVersion = 9.0;
+					};
+				};
+			};
+			buildConfigurationList = 7B9F8D2A1EF2CC4700F913BD /* Build configuration list for PBXProject "TinyYOLO-NNGraph" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 7B9F8D261EF2CC4700F913BD;
+			productRefGroup = 7B9F8D301EF2CC4700F913BD /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7B9F8D2E1EF2CC4700F913BD /* TinyYOLO-NNGraph */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		7B9F8D2D1EF2CC4700F913BD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7B3F88211EF94BBD002A4D6D /* conv6.bin in Resources */,
+				7B3F88231EF94BBD002A4D6D /* conv8.bin in Resources */,
+				7B383BF21EF7FEA600FEDB5F /* dog416.png in Resources */,
+				7B3F88241EF94BBD002A4D6D /* conv9.bin in Resources */,
+				7B9F8D3A1EF2CC4700F913BD /* Assets.xcassets in Resources */,
+				7B3F88221EF94BBD002A4D6D /* conv7.bin in Resources */,
+				7B9F8D381EF2CC4700F913BD /* Main.storyboard in Resources */,
+				7B3F88201EF94BBD002A4D6D /* conv5.bin in Resources */,
+				7B3F881E1EF94BBD002A4D6D /* conv3.bin in Resources */,
+				7B3F881D1EF94BBD002A4D6D /* conv2.bin in Resources */,
+				7B3F881C1EF94BBD002A4D6D /* conv1.bin in Resources */,
+				7B3F881F1EF94BBD002A4D6D /* conv4.bin in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7B9F8D2B1EF2CC4700F913BD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7B9F8D471EF2CCF400F913BD /* VideoCapture.swift in Sources */,
+				7B383BEE1EF7FD8E00FEDB5F /* MTLTexture+Array.swift in Sources */,
+				7B9F8D461EF2CCF400F913BD /* BoundingBox.swift in Sources */,
+				7B9F8D4D1EF2CDF900F913BD /* YOLO.swift in Sources */,
+				7B9F8D351EF2CC4700F913BD /* ViewController.swift in Sources */,
+				7B383BEC1EF7FD5200FEDB5F /* UIImage+RawBytes.swift in Sources */,
+				7B9F8D4C1EF2CDF100F913BD /* Helpers.swift in Sources */,
+				7B383BE81EF7F57C00FEDB5F /* MPSImage+Floats.swift in Sources */,
+				7B3F88121EF82C34002A4D6D /* Debugging.swift in Sources */,
+				7B383BE71EF7F57A00FEDB5F /* Float16.swift in Sources */,
+				7B9F8D331EF2CC4700F913BD /* AppDelegate.swift in Sources */,
+				7B383BF01EF7FE7B00FEDB5F /* TextureLoader.swift in Sources */,
+				7B383BEB1EF7FD4F00FEDB5F /* UIImage+MTLTexture.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		7B9F8D361EF2CC4700F913BD /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				7B9F8D371EF2CC4700F913BD /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		7B9F8D3F1EF2CC4700F913BD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		7B9F8D401EF2CC4700F913BD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		7B9F8D421EF2CC4700F913BD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = MGCEKGP4Y4;
+				INFOPLIST_FILE = "TinyYOLO-NNGraph/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "net.machinethink.TinyYOLO-NNGraph";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		7B9F8D431EF2CC4700F913BD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = MGCEKGP4Y4;
+				INFOPLIST_FILE = "TinyYOLO-NNGraph/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "net.machinethink.TinyYOLO-NNGraph";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		7B9F8D2A1EF2CC4700F913BD /* Build configuration list for PBXProject "TinyYOLO-NNGraph" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7B9F8D3F1EF2CC4700F913BD /* Debug */,
+				7B9F8D401EF2CC4700F913BD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7B9F8D411EF2CC4700F913BD /* Build configuration list for PBXNativeTarget "TinyYOLO-NNGraph" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7B9F8D421EF2CC4700F913BD /* Debug */,
+				7B9F8D431EF2CC4700F913BD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 7B9F8D271EF2CC4700F913BD /* Project object */;
+}
