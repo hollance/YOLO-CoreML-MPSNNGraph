@@ -116,7 +116,6 @@ class ViewController: UIViewController {
   }
 
   func show(predictions: [YOLO.Prediction]) {
-    print(predictions)
     for i in 0..<boundingBoxes.count {
       if i < predictions.count {
         let prediction = predictions[i]
@@ -155,7 +154,7 @@ class ViewController: UIViewController {
 extension ViewController: VideoCaptureDelegate {
   func videoCapture(_ capture: VideoCapture, didCaptureVideoTexture texture: MTLTexture?, timestamp: CMTime) {
     // For debugging.
-    predict(texture: loadTexture(named: "dog416.png")!); return
+    //predict(texture: loadTexture(named: "dog416.png")!); return
 
     if let texture = texture {
       predict(texture: texture)
