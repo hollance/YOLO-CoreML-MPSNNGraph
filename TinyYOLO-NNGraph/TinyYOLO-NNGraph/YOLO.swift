@@ -19,15 +19,9 @@ class YOLO {
 
   let commandQueue: MTLCommandQueue
   let graph: MPSNNGraph
-  let lanczos: MPSImageLanczosScale
-  let scaledImgDesc = MPSImageDescriptor(channelFormat: .float16, width: 416, height: 416, featureChannels: 3)
 
   public init(commandQueue: MTLCommandQueue) {
     self.commandQueue = commandQueue
-
-    // Scales the image to 416x416 pixels.
-    let device = commandQueue.device
-    lanczos = MPSImageLanczosScale(device: device)
 
     // Create a placeholder for the input image.
     // Note: YOLO expects the input pixels to be in the range 0-1. Our input
@@ -37,7 +31,12 @@ class YOLO {
     // between 0 and 1.
     let inputImage = MPSNNImageNode(handle: nil)
 
-    let conv1 = MPSCNNConvolutionNode(source: inputImage,
+    let scale = MPSNNLanczosScaleNode(source: inputImage,
+                                      outputSize: MTLSize(width: YOLO.inputWidth,
+                                                          height: YOLO.inputHeight,
+                                                          depth: 3))
+
+    let conv1 = MPSCNNConvolutionNode(source: scale.resultImage,
                                       weights: DataSource("conv1", 3, 3, 3, 16))
 
     let pool1 = MPSCNNPoolingMaxNode(source: conv1.resultImage, filterSize: 2)
@@ -81,55 +80,31 @@ class YOLO {
     let conv9 = MPSCNNConvolutionNode(source: conv8.resultImage,
                                       weights: DataSource("conv9", 1, 1, 1024, 125, useLeaky: false))
 
-    if let graph = MPSNNGraph(device: device, resultImage: conv9.resultImage) {
+    if let graph = MPSNNGraph(device: commandQueue.device,
+                              resultImage: conv9.resultImage) {
       self.graph = graph
     } else {
       fatalError("Error: could not initialize graph")
     }
 
     // Enable extra debugging output.
-    graph.options = .verbose
+    //graph.options = .verbose
     print(graph.debugDescription)
   }
 
   public func predict(texture: MTLTexture, completionHandler handler: @escaping (Result) -> Void) {
     let startTime = CACurrentMediaTime()
-    let commandBuffer = commandQueue.makeCommandBuffer()
 
-    // For debugging purposes, we can show the scaled image on the main UI.
-    // But to do that it must be a real MPSImage, not a temporary one.
-    //let scaledImg = MPSImage(device: commandQueue.device, imageDescriptor: scaledImgDesc)
+    let inputImage = MPSImage(texture: texture, featureChannels: 3)
 
-    let scaledImg = MPSTemporaryImage(commandBuffer: commandBuffer, imageDescriptor: scaledImgDesc)
-    lanczos.encode(commandBuffer: commandBuffer, sourceTexture: texture, destinationTexture: scaledImg.texture)
-
-    let outputImg = graph.encode(to: commandBuffer, sourceImages: [scaledImg])
-
-    commandBuffer.addCompletedHandler { [outputImg] commandBuffer in
+    graph.executeAsync(withSourceImages: [inputImage]) { outputImage, error in
       var result = Result()
-      if commandBuffer.status == .completed {
-        result.predictions = self.computeBoundingBoxes(outputImg)
+      if let image = outputImage {
+        result.predictions = self.computeBoundingBoxes(image)
       }
       result.elapsed = CACurrentMediaTime() - startTime
-      //result.debugTexture = scaledImg.texture
       handler(result)
     }
-
-    commandBuffer.commit()
-
-    /*
-    // Can't use the executeAsync API because we need to resize the texture
-    // first and the graph does not have a resize node.
-    graph.executeAsync(withSourceImages: [input]) { image, status, error in
-      print(status, error, Thread.isMainThread)
-
-      if let image = image {
-        handler(self.computeBoundingBoxes(image))
-      } else {
-        handler([])
-      }
-    }
-    */
   }
 
   // This function is exactly the same as in Forge's YOLO example.

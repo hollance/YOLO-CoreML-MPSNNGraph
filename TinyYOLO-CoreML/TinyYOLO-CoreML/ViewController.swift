@@ -219,6 +219,7 @@ extension ViewController: VideoCaptureDelegate {
     // Perform the prediction on VideoCapture's queue.
     if let pixelBuffer = pixelBuffer {
       predict(pixelBuffer: pixelBuffer)
+      //predictUsingVision(pixelBuffer: pixelBuffer)
     }
   }
 }
