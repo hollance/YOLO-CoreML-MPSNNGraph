@@ -19,4 +19,4 @@ coreml_model.output_description['grid'] = 'The 13x13 grid with the bounding box 
 
 print(coreml_model)
 
-#coreml_model.save('../TinyYOLO-CoreML/TinyYOLO-CoreML/TinyYOLO.mlmodel')
+coreml_model.save('../TinyYOLO-CoreML/TinyYOLO-CoreML/TinyYOLO.mlmodel')
