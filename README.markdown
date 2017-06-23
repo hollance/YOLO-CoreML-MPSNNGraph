@@ -38,6 +38,7 @@ pip3 install keras==1.2.2
 pip3 install h5py
 pip3 install pydot-ng
 pip3 install pillow
+brew install graphviz
 ```
 
 Run the yad2k.py script to convert the Darknet model to Keras:
