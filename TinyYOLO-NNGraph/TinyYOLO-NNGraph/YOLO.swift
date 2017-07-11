@@ -316,7 +316,7 @@ class YOLO {
   }
 
   // This class describes the padding we're using on the pool6 layer.
-  class Pool6Padding: NSObject, MPSNNPadding {
+  @objc(YOLO_Pool6Padding) class Pool6Padding: NSObject, MPSNNPadding {
     override init() {
       super.init()
     }

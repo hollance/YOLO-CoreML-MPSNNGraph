@@ -75,7 +75,7 @@ class ViewController: UIViewController {
     }
 
     request = VNCoreMLRequest(model: visionModel, completionHandler: visionRequestDidComplete)
-    request.imageCropAndScaleOption = VNImageCropAndScaleOptionCenterCrop
+    request.imageCropAndScaleOption = .centerCrop
   }
 
   func setUpCamera() {
@@ -134,7 +134,7 @@ class ViewController: UIViewController {
     let sx = CGFloat(YOLO.inputWidth) / CGFloat(CVPixelBufferGetWidth(pixelBuffer))
     let sy = CGFloat(YOLO.inputHeight) / CGFloat(CVPixelBufferGetHeight(pixelBuffer))
     let scaleTransform = CGAffineTransform(scaleX: sx, y: sy)
-    let scaledImage = ciImage.applying(scaleTransform)
+    let scaledImage = ciImage.transformed(by: scaleTransform)
     ciContext.render(scaledImage, to: resizedPixelBuffer)
 
     // This is an alternative way to resize the image (using vImage):
