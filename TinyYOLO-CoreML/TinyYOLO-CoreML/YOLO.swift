@@ -44,6 +44,18 @@ class YOLO {
     // values for each grid cell, i.e. 125 channels. The total features array
     // contains 125x13x13 elements.
 
+    // NOTE: It turns out that accessing the elements in the multi-array as
+    // `features[[channel, cy, cx] as [NSNumber]].floatValue` is kinda slow.
+    // It's much faster to use direct memory access to the features.
+    let featurePointer = UnsafeMutablePointer<Double>(OpaquePointer(features.dataPointer))
+    let channelStride = features.strides[0].intValue
+    let yStride = features.strides[1].intValue
+    let xStride = features.strides[2].intValue
+
+    func offset(_ channel: Int, _ x: Int, _ y: Int) -> Int {
+      return channel*channelStride + y*yStride + x*xStride
+    }
+
     for cy in 0..<gridHeight {
       for cx in 0..<gridWidth {
         for b in 0..<boxesPerCell {
@@ -51,11 +63,22 @@ class YOLO {
           // For the first bounding box (b=0) we have to read channels 0-24,
           // for b=1 we have to read channels 25-49, and so on.
           let channel = b*(numClasses + 5)
+
+          // The slow way:
+          /*
           let tx = features[[channel    , cy, cx] as [NSNumber]].floatValue
           let ty = features[[channel + 1, cy, cx] as [NSNumber]].floatValue
           let tw = features[[channel + 2, cy, cx] as [NSNumber]].floatValue
           let th = features[[channel + 3, cy, cx] as [NSNumber]].floatValue
           let tc = features[[channel + 4, cy, cx] as [NSNumber]].floatValue
+          */
+
+          // The fast way:
+          let tx = Float(featurePointer[offset(channel    , cx, cy)])
+          let ty = Float(featurePointer[offset(channel + 1, cx, cy)])
+          let tw = Float(featurePointer[offset(channel + 2, cx, cy)])
+          let th = Float(featurePointer[offset(channel + 3, cx, cy)])
+          let tc = Float(featurePointer[offset(channel + 4, cx, cy)])
 
           // The predicted tx and ty coordinates are relative to the location
           // of the grid cell; we use the logistic sigmoid to constrain these
@@ -80,7 +103,11 @@ class YOLO {
           // so we can interpret these numbers as percentages.
           var classes = [Float](repeating: 0, count: numClasses)
           for c in 0..<numClasses {
-            classes[c] = features[[channel + 5 + c, cy, cx] as [NSNumber]].floatValue
+            // The slow way:
+            //classes[c] = features[[channel + 5 + c, cy, cx] as [NSNumber]].floatValue
+
+            // The fast way:
+            classes[c] = Float(featurePointer[offset(channel + 5 + c, cx, cy)])
           }
           classes = softmax(classes)
 
