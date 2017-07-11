@@ -75,7 +75,11 @@ class ViewController: UIViewController {
     }
 
     request = VNCoreMLRequest(model: visionModel, completionHandler: visionRequestDidComplete)
-    request.imageCropAndScaleOption = .centerCrop
+
+    // NOTE: If you choose another crop/scale option, then you must also
+    // change how the BoundingBox objects get scaled when they are drawn.
+    // Currently they assume the full input image is used.
+    request.imageCropAndScaleOption = .scaleFill
   }
 
   func setUpCamera() {
@@ -119,7 +123,7 @@ class ViewController: UIViewController {
   // MARK: - Doing inference
 
   func predict(image: UIImage) {
-    if let pixelBuffer = image.pixelBuffer(width: 416, height: 416) {
+    if let pixelBuffer = image.pixelBuffer(width: YOLO.inputWidth, height: YOLO.inputHeight) {
       predict(pixelBuffer: pixelBuffer)
     }
   }
@@ -145,34 +149,38 @@ class ViewController: UIViewController {
     // Resize the input to 416x416 and give it to our model.
     if let boundingBoxes = try? yolo.predict(image: resizedPixelBuffer) {
       let elapsed = CACurrentMediaTime() - startTime
-
-      DispatchQueue.main.async {
-        // For debugging, to make sure the resized CVPixelBuffer is correct.
-        //var debugImage: CGImage?
-        //VTCreateCGImageFromCVPixelBuffer(resizedPixelBuffer, nil, &debugImage)
-        //self.debugImageView.image = UIImage(cgImage: debugImage!)
-
-        self.show(predictions: boundingBoxes)
-        self.timeLabel.text = String(format: "Elapsed %.5f seconds (%.2f FPS)", elapsed, 1/elapsed)
-      }
+      showOnMainThread(boundingBoxes, elapsed)
     }
   }
 
   func predictUsingVision(pixelBuffer: CVPixelBuffer) {
-    // TODO: This ought to work but the request contains no results!
-    // For some reason Vision does not understand it needs to return
-    // a VNCoreMLFeatureValueObservation object.
+    // Measure how long it takes to predict a single video frame.
+    startTime = CACurrentMediaTime()
+
+    // Vision will automatically resize the input image.
     let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer)
     try? handler.perform([request])
   }
 
   func visionRequestDidComplete(request: VNRequest, error: Error?) {
-    if let observations = request.results as? [VNCoreMLFeatureValueObservation] {
-      print(observations.count)
+    if let observations = request.results as? [VNCoreMLFeatureValueObservation],
+       let features = observations.first?.featureValue.multiArrayValue {
 
-      DispatchQueue.main.async {
-        // TODO: show the results
-      }
+      let boundingBoxes = yolo.computeBoundingBoxes(features: features)
+      let elapsed = CACurrentMediaTime() - startTime
+      showOnMainThread(boundingBoxes, elapsed)
+    }
+  }
+
+  func showOnMainThread(_ boundingBoxes: [YOLO.Prediction], _ elapsed: CFTimeInterval) {
+    DispatchQueue.main.async {
+      // For debugging, to make sure the resized CVPixelBuffer is correct.
+      //var debugImage: CGImage?
+      //VTCreateCGImageFromCVPixelBuffer(resizedPixelBuffer, nil, &debugImage)
+      //self.debugImageView.image = UIImage(cgImage: debugImage!)
+
+      self.show(predictions: boundingBoxes)
+      self.timeLabel.text = String(format: "Elapsed %.5f seconds (%.2f FPS)", elapsed, 1/elapsed)
     }
   }
 
@@ -188,8 +196,8 @@ class ViewController: UIViewController {
         // and bottom.
         let width = view.bounds.width
         let height = width * 4 / 3
-        let scaleX = width / 416
-        let scaleY = height / 416
+        let scaleX = width / CGFloat(YOLO.inputWidth)
+        let scaleY = height / CGFloat(YOLO.inputHeight)
         let top = (view.bounds.height - height) / 2
 
         // Translate and scale the rectangle to our own coordinate system.
@@ -218,8 +226,8 @@ extension ViewController: VideoCaptureDelegate {
 
     // Perform the prediction on VideoCapture's queue.
     if let pixelBuffer = pixelBuffer {
-      predict(pixelBuffer: pixelBuffer)
-      //predictUsingVision(pixelBuffer: pixelBuffer)
+      //predict(pixelBuffer: pixelBuffer)
+      predictUsingVision(pixelBuffer: pixelBuffer)
     }
   }
 }
