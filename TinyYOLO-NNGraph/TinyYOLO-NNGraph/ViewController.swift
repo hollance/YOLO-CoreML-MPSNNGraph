@@ -15,6 +15,10 @@ class ViewController: UIViewController {
   var yolo: YOLO!
   var boundingBoxes = [BoundingBox]()
   var colors: [UIColor] = []
+    
+  var framesDone = 0
+  var frameCapturingStartTime: CFTimeInterval = 0
+  let semaphore = DispatchSemaphore(value: 2)
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -33,6 +37,8 @@ class ViewController: UIViewController {
 
     setUpBoundingBoxes()
     setUpCamera()
+    
+    frameCapturingStartTime = CACurrentMediaTime()
   }
 
   override func didReceiveMemoryWarning() {
@@ -43,10 +49,7 @@ class ViewController: UIViewController {
   // MARK: - Initialization
 
   func setUpBoundingBoxes() {
-    // The app can show up to 10 detections at a time. You can increase this
-    // limit by allocating more BoundingBox objects, but there's only so much
-    // room on the screen. (You also need to change the limit in YOLO.swift.)
-    for _ in 0..<10 {
+    for _ in 0..<YOLO.maxBoundingBoxes {
       boundingBoxes.append(BoundingBox())
     }
 
@@ -65,7 +68,7 @@ class ViewController: UIViewController {
   func setUpCamera() {
     videoCapture = VideoCapture(device: device)
     videoCapture.delegate = self
-    videoCapture.fps = 5
+    videoCapture.fps = 50
     videoCapture.setUp(sessionPreset: AVCaptureSession.Preset.vga640x480) { success in
       if success {
         // Add the video preview into the UI.
@@ -110,9 +113,25 @@ class ViewController: UIViewController {
         if let texture = result.debugTexture {
           self.debugImageView.image = UIImage.image(texture: texture)
         }
-        self.timeLabel.text = String(format: "Elapsed %.5f seconds (%.2f FPS)", result.elapsed, 1/result.elapsed)
+
+        let fps = self.measureFPS()
+        self.timeLabel.text = String(format: "Elapsed %.5f seconds - %.2f FPS", result.elapsed, fps)
+
+        self.semaphore.signal()
       }
     }
+  }
+
+  func measureFPS() -> Double {
+    // Measure how many frames were actually delivered per second.
+    framesDone += 1
+    let frameCapturingElapsed = CACurrentMediaTime() - frameCapturingStartTime
+    let currentFPSDelivered = Double(framesDone) / frameCapturingElapsed
+    if frameCapturingElapsed > 1 {
+      framesDone = 0
+      frameCapturingStartTime = CACurrentMediaTime()
+    }
+    return currentFPSDelivered
   }
 
   func show(predictions: [YOLO.Prediction]) {
@@ -143,7 +162,6 @@ class ViewController: UIViewController {
         let label = String(format: "%@ %.1f", labels[prediction.classIndex], prediction.score * 100)
         let color = colors[prediction.classIndex]
         boundingBoxes[i].show(frame: rect, label: label, color: color)
-
       } else {
         boundingBoxes[i].hide()
       }
@@ -155,6 +173,15 @@ extension ViewController: VideoCaptureDelegate {
   func videoCapture(_ capture: VideoCapture, didCaptureVideoTexture texture: MTLTexture?, timestamp: CMTime) {
     // For debugging.
     //predict(texture: loadTexture(named: "dog416.png")!); return
+
+    // The semaphore is necessary because the call to predict() does not block.
+    // If we _would_ be blocking, then AVCapture will automatically drop frames
+    // that come in while we're still busy. But since we don't block, all these
+    // new frames get scheduled to run in the future and we end up with a backlog
+    // of unprocessed frames. So we're using the semaphore to block if predict()
+    // is already processing 2 frames, and we wait until the first of those is
+    // done. Any new frames that come in during that time will simply be dropped.
+    semaphore.wait()
 
     if let texture = texture {
       predict(texture: texture)

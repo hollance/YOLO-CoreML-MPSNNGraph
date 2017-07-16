@@ -5,6 +5,11 @@ import CoreML
 class YOLO {
   public static let inputWidth = 416
   public static let inputHeight = 416
+  public static let maxBoundingBoxes = 10
+
+  // Tweak these values to get more or fewer predictions.
+  let confidenceThreshold: Float = 0.3
+  let iouThreshold: Float = 0.5
 
   struct Prediction {
     let classIndex: Int
@@ -122,7 +127,7 @@ class YOLO {
 
           // Since we compute 13x13x5 = 845 bounding boxes, we only want to
           // keep the ones whose combined score is over a certain threshold.
-          if confidenceInClass > 0.3 {
+          if confidenceInClass > confidenceThreshold {
             let rect = CGRect(x: CGFloat(x - w/2), y: CGFloat(y - h/2),
                               width: CGFloat(w), height: CGFloat(h))
 
@@ -138,6 +143,6 @@ class YOLO {
     // We already filtered out any bounding boxes that have very low scores,
     // but there still may be boxes that overlap too much with others. We'll
     // use "non-maximum suppression" to prune those duplicate bounding boxes.
-    return nonMaxSuppression(boxes: predictions, limit: 10, threshold: 0.5)
+    return nonMaxSuppression(boxes: predictions, limit: YOLO.maxBoundingBoxes, threshold: iouThreshold)
   }
 }

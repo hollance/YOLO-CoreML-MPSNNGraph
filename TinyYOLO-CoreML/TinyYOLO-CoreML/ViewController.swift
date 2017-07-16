@@ -13,13 +13,16 @@ class ViewController: UIViewController {
 
   var videoCapture: VideoCapture!
   var request: VNCoreMLRequest!
-  var startTime: CFTimeInterval = 0
 
   var boundingBoxes = [BoundingBox]()
   var colors: [UIColor] = []
 
   let ciContext = CIContext()
   var resizedPixelBuffer: CVPixelBuffer?
+
+  var framesDone = 0
+  var frameCapturingStartTime = CACurrentMediaTime()
+  let semaphore = DispatchSemaphore(value: 2)
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -30,6 +33,8 @@ class ViewController: UIViewController {
     setUpCoreImage()
     setUpVision()
     setUpCamera()
+
+    frameCapturingStartTime = CACurrentMediaTime()
   }
 
   override func didReceiveMemoryWarning() {
@@ -40,10 +45,7 @@ class ViewController: UIViewController {
   // MARK: - Initialization
 
   func setUpBoundingBoxes() {
-    // The app can show up to 10 detections at a time. You can increase this
-    // limit by allocating more BoundingBox objects, but there's only so much
-    // room on the screen. (You also need to change the limit in YOLO.swift.)
-    for _ in 0..<10 {
+    for _ in 0..<YOLO.maxBoundingBoxes {
       boundingBoxes.append(BoundingBox())
     }
 
@@ -85,7 +87,7 @@ class ViewController: UIViewController {
   func setUpCamera() {
     videoCapture = VideoCapture()
     videoCapture.delegate = self
-    videoCapture.fps = 5
+    videoCapture.fps = 50
     videoCapture.setUp(sessionPreset: AVCaptureSession.Preset.vga640x480) { success in
       if success {
         // Add the video preview into the UI.
@@ -130,7 +132,7 @@ class ViewController: UIViewController {
 
   func predict(pixelBuffer: CVPixelBuffer) {
     // Measure how long it takes to predict a single video frame.
-    startTime = CACurrentMediaTime()
+    let startTime = CACurrentMediaTime()
 
     // Resize the input with Core Image to 416x416.
     guard let resizedPixelBuffer = resizedPixelBuffer else { return }
@@ -154,9 +156,6 @@ class ViewController: UIViewController {
   }
 
   func predictUsingVision(pixelBuffer: CVPixelBuffer) {
-    // Measure how long it takes to predict a single video frame.
-    startTime = CACurrentMediaTime()
-
     // Vision will automatically resize the input image.
     let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer)
     try? handler.perform([request])
@@ -167,8 +166,13 @@ class ViewController: UIViewController {
        let features = observations.first?.featureValue.multiArrayValue {
 
       let boundingBoxes = yolo.computeBoundingBoxes(features: features)
-      let elapsed = CACurrentMediaTime() - startTime
-      showOnMainThread(boundingBoxes, elapsed)
+      showOnMainThread(boundingBoxes, 0)
+
+      // NOTE: There doesn't seem to be a way to capture the starting time of
+      // the Vision request and get it passed into this completion handler.
+      // We can't capture it in a property because we may launch a new request
+      // while the previous one is still underway, which would overwrite the
+      // old starting time.
     }
   }
 
@@ -180,8 +184,24 @@ class ViewController: UIViewController {
       //self.debugImageView.image = UIImage(cgImage: debugImage!)
 
       self.show(predictions: boundingBoxes)
-      self.timeLabel.text = String(format: "Elapsed %.5f seconds (%.2f FPS)", elapsed, 1/elapsed)
+
+      let fps = self.measureFPS()
+      self.timeLabel.text = String(format: "Elapsed %.5f seconds - %.2f FPS", elapsed, fps)
+
+      self.semaphore.signal()
     }
+  }
+
+  func measureFPS() -> Double {
+    // Measure how many frames were actually delivered per second.
+    framesDone += 1
+    let frameCapturingElapsed = CACurrentMediaTime() - frameCapturingStartTime
+    let currentFPSDelivered = Double(framesDone) / frameCapturingElapsed
+    if frameCapturingElapsed > 1 {
+      framesDone = 0
+      frameCapturingStartTime = CACurrentMediaTime()
+    }
+    return currentFPSDelivered
   }
 
   func show(predictions: [YOLO.Prediction]) {
@@ -224,10 +244,16 @@ extension ViewController: VideoCaptureDelegate {
     // For debugging.
     //predict(image: UIImage(named: "dog416")!); return
 
-    // Perform the prediction on VideoCapture's queue.
+    semaphore.wait()
+
     if let pixelBuffer = pixelBuffer {
-      //predict(pixelBuffer: pixelBuffer)
-      predictUsingVision(pixelBuffer: pixelBuffer)
+      // For better throughput, perform the prediction on a background queue
+      // instead of on the VideoCapture queue. We use the semaphore to block
+      // the capture queue and drop frames when Core ML can't keep up.
+      DispatchQueue.global().async {
+        //self.predict(pixelBuffer: pixelBuffer)
+        self.predictUsingVision(pixelBuffer: pixelBuffer)
+      }
     }
   }
 }

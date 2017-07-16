@@ -95,4 +95,8 @@ extension VideoCapture: AVCaptureVideoDataOutputSampleBufferDelegate {
       delegate?.videoCapture(self, didCaptureVideoFrame: imageBuffer, timestamp: timestamp)
     }
   }
+
+  public func captureOutput(_ output: AVCaptureOutput, didDrop sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+    //print("dropped frame")
+  }
 }
