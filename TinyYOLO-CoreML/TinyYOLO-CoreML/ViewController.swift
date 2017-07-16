@@ -13,6 +13,7 @@ class ViewController: UIViewController {
 
   var videoCapture: VideoCapture!
   var request: VNCoreMLRequest!
+  var startTimes: [CFTimeInterval] = []
 
   var boundingBoxes = [BoundingBox]()
   var colors: [UIColor] = []
@@ -156,6 +157,11 @@ class ViewController: UIViewController {
   }
 
   func predictUsingVision(pixelBuffer: CVPixelBuffer) {
+    // Measure how long it takes to predict a single video frame. Note that
+    // predict() can be called on the next frame while the previous one is
+    // still being processed. Hence the need to queue up the start times.
+    startTimes.append(CACurrentMediaTime())
+
     // Vision will automatically resize the input image.
     let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer)
     try? handler.perform([request])
@@ -166,13 +172,8 @@ class ViewController: UIViewController {
        let features = observations.first?.featureValue.multiArrayValue {
 
       let boundingBoxes = yolo.computeBoundingBoxes(features: features)
-      showOnMainThread(boundingBoxes, 0)
-
-      // NOTE: There doesn't seem to be a way to capture the starting time of
-      // the Vision request and get it passed into this completion handler.
-      // We can't capture it in a property because we may launch a new request
-      // while the previous one is still underway, which would overwrite the
-      // old starting time.
+      let elapsed = CACurrentMediaTime() - startTimes.remove(at: 0)
+      showOnMainThread(boundingBoxes, elapsed)
     }
   }
 
