@@ -16,7 +16,7 @@ In this repo you'll find:
 
 To run the app, just open the **xcodeproj** file in Xcode 9 and run it on a device with iOS 11 or better installed.
 
-> **NOTE:** Running these kinds of neural networks eats up a lot of battery power. The app puts a limit on the number of times per second it runs the neural net. You can change this in `setUpCamera()` by changing the line `videoCapture.fps = 5` to a larger number.
+> **NOTE:** Running these kinds of neural networks eats up a lot of battery power. The app can put a limit on the number of times per second it runs the neural net. You can change this in `setUpCamera()` by changing the line `videoCapture.fps = 50` to a smaller number.
 
 ## Converting the models
 
