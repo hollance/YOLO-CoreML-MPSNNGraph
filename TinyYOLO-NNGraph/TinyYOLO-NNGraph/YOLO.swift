@@ -266,8 +266,7 @@ class YOLO {
                                              inputFeatureChannels: inputFeatureChannels,
                                              outputFeatureChannels: outputFeatureChannels)
       if useLeaky {
-        desc.neuronType = .reLU
-        desc.neuronParameterA = 0.1
+        desc.setNeuronType(.reLU, parameterA: 0.1, parameterB: 0)
 
         // This layer has batch normalization applied to it. The data for this
         // layer is stored as: [ weights | mean | variance | gamma | beta ].
@@ -281,7 +280,7 @@ class YOLO {
                   variance: variance, gamma: gamma, beta: beta, epsilon: 1e-3)
         }
       } else {
-        desc.neuronType = .none
+        desc.setNeuronType(.none, parameterA: 0, parameterB: 0)
       }
       return desc
     }
