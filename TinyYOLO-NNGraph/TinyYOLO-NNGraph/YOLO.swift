@@ -316,6 +316,10 @@ class YOLO {
     func dataType() -> MPSDataType {
       return .float32
     }
+
+    func copy(with zone: NSZone? = nil) -> Any {
+      fatalError("copyWithZone not implemented")
+    }
   }
 
   // This class describes the padding we're using on the pool6 layer.

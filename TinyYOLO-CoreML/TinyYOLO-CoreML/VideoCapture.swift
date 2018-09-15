@@ -89,7 +89,7 @@ extension VideoCapture: AVCaptureVideoDataOutputSampleBufferDelegate {
     // framerate.
     let timestamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
     let deltaTime = timestamp - lastTimestamp
-    if deltaTime >= CMTimeMake(1, Int32(fps)) {
+    if deltaTime >= CMTimeMake(value: 1, timescale: Int32(fps)) {
       lastTimestamp = timestamp
       let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer)
       delegate?.videoCapture(self, didCaptureVideoFrame: imageBuffer, timestamp: timestamp)
