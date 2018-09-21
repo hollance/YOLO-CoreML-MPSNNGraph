@@ -9,10 +9,13 @@ class ViewController: UIViewController {
   @IBOutlet weak var timeLabel: UILabel!
   @IBOutlet weak var debugImageView: UIImageView!
 
+  // true: use Vision to drive Core ML, false: use plain Core ML
+  let useVision = true
+
   let yolo = YOLO()
 
   var videoCapture: VideoCapture!
-  var request: VNCoreMLRequest!
+  var requests = [VNCoreMLRequest]()
   var startTimes: [CFTimeInterval] = []
 
   var boundingBoxes = [BoundingBox]()
@@ -23,7 +26,10 @@ class ViewController: UIViewController {
 
   var framesDone = 0
   var frameCapturingStartTime = CACurrentMediaTime()
-  let semaphore = DispatchSemaphore(value: 3)
+
+  static let maxInflightBuffers = 3
+  var inflightBuffer = 0
+  let semaphore = DispatchSemaphore(value: ViewController.maxInflightBuffers)
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -77,12 +83,15 @@ class ViewController: UIViewController {
       return
     }
 
-    request = VNCoreMLRequest(model: visionModel, completionHandler: visionRequestDidComplete)
+    for _ in 0..<ViewController.maxInflightBuffers {
+      let request = VNCoreMLRequest(model: visionModel, completionHandler: visionRequestDidComplete)
 
-    // NOTE: If you choose another crop/scale option, then you must also
-    // change how the BoundingBox objects get scaled when they are drawn.
-    // Currently they assume the full input image is used.
-    request.imageCropAndScaleOption = .scaleFill
+      // NOTE: If you choose another crop/scale option, then you must also
+      // change how the BoundingBox objects get scaled when they are drawn.
+      // Currently they assume the full input image is used.
+      request.imageCropAndScaleOption = .scaleFill
+      requests.append(request)
+    }
   }
 
   func setUpCamera() {
@@ -149,11 +158,15 @@ class ViewController: UIViewController {
     //                                              width: YOLO.inputWidth,
     //                                              height: YOLO.inputHeight)
 
-    // Resize the input to 416x416 and give it to our model.
+    // Give the resized input it to our model.
     if let boundingBoxes = try? yolo.predict(image: resizedPixelBuffer) {
       let elapsed = CACurrentMediaTime() - startTime
       showOnMainThread(boundingBoxes, elapsed)
+    } else {
+      print("BOGUS")
     }
+
+    self.semaphore.signal()
   }
 
   func predictUsingVision(pixelBuffer: CVPixelBuffer) {
@@ -164,7 +177,22 @@ class ViewController: UIViewController {
 
     // Vision will automatically resize the input image.
     let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer)
-    try? handler.perform([request])
+    let request = requests[inflightBuffer]
+
+    // For better throughput, we want to schedule multiple Vision requests
+    // in parllel. These need to be separate instances, and inflightBuffer
+    // is the index of the current request object to use.
+    inflightBuffer += 1
+    if inflightBuffer >= ViewController.maxInflightBuffers {
+      inflightBuffer = 0
+    }
+
+    // Because perform() will block until after the request completes, we
+    // run it on a concurrent background queue, so that the next frame can
+    // be scheduled in parallel with this one.
+    DispatchQueue.global().async {
+      try? handler.perform([request])
+    }
   }
 
   func visionRequestDidComplete(request: VNRequest, error: Error?) {
@@ -174,7 +202,11 @@ class ViewController: UIViewController {
       let boundingBoxes = yolo.computeBoundingBoxes(features: features)
       let elapsed = CACurrentMediaTime() - startTimes.remove(at: 0)
       showOnMainThread(boundingBoxes, elapsed)
+    } else {
+      print("BOGUS!")
     }
+
+    self.semaphore.signal()
   }
 
   func showOnMainThread(_ boundingBoxes: [YOLO.Prediction], _ elapsed: CFTimeInterval) {
@@ -188,8 +220,6 @@ class ViewController: UIViewController {
 
       let fps = self.measureFPS()
       self.timeLabel.text = String(format: "Elapsed %.5f seconds - %.2f FPS", elapsed, fps)
-
-      self.semaphore.signal()
     }
   }
 
@@ -245,15 +275,21 @@ extension ViewController: VideoCaptureDelegate {
     // For debugging.
     //predict(image: UIImage(named: "dog416")!); return
 
+    // The semaphore will block the capture queue and drop frames when Core ML
+    // can't keep up with the camera.
     semaphore.wait()
 
     if let pixelBuffer = pixelBuffer {
-      // For better throughput, perform the prediction on a background queue
-      // instead of on the VideoCapture queue. We use the semaphore to block
-      // the capture queue and drop frames when Core ML can't keep up.
-      DispatchQueue.global().async {
-        //self.predict(pixelBuffer: pixelBuffer)
+      if useVision {
+        // This method should always be called from the same thread!
+        // Ain't nobody likes race conditions and crashes.
         self.predictUsingVision(pixelBuffer: pixelBuffer)
+      } else {
+        // For better throughput, perform the prediction on a concurrent
+        // background queue instead of on the serial VideoCapture queue.
+        DispatchQueue.global().async {
+          self.predict(pixelBuffer: pixelBuffer)
+        }
       }
     }
   }
