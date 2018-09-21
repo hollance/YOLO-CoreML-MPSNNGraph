@@ -18,7 +18,7 @@ class ViewController: UIViewController {
     
   var framesDone = 0
   var frameCapturingStartTime: CFTimeInterval = 0
-  let semaphore = DispatchSemaphore(value: 2)
+  let semaphore = DispatchSemaphore(value: 3)
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -68,8 +68,8 @@ class ViewController: UIViewController {
   func setUpCamera() {
     videoCapture = VideoCapture(device: device)
     videoCapture.delegate = self
-    videoCapture.fps = 50
-    videoCapture.setUp(sessionPreset: AVCaptureSession.Preset.vga640x480) { success in
+    videoCapture.desiredFrameRate = 240
+    videoCapture.setUp(sessionPreset: AVCaptureSession.Preset.hd1280x720) { success in
       if success {
         // Add the video preview into the UI.
         if let previewLayer = self.videoCapture.previewLayer {
@@ -141,11 +141,11 @@ class ViewController: UIViewController {
 
         // The predicted bounding box is in the coordinate space of the input
         // image, which is a square image of 416x416 pixels. We want to show it
-        // on the video preview, which is as wide as the screen and has a 4:3
+        // on the video preview, which is as wide as the screen and has a 16:9
         // aspect ratio. The video preview also may be letterboxed at the top
         // and bottom.
         let width = view.bounds.width
-        let height = width * 4 / 3
+        let height = width * 16 / 9
         let scaleX = width / 416
         let scaleY = height / 416
         let top = (view.bounds.height - height) / 2
