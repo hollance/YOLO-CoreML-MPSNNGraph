@@ -165,7 +165,8 @@ class ViewController: UIViewController {
     //                                              height: YOLO.inputHeight)
 
     // Give the resized input it to our model.
-    if let boundingBoxes = try? yolo.predict(image: resizedPixelBuffer) {
+    if let result = try? yolo.predict(image: resizedPixelBuffer),
+       let boundingBoxes = result {
       let elapsed = CACurrentMediaTime() - startTime
       showOnMainThread(boundingBoxes, elapsed)
     } else {
