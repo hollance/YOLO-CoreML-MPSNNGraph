@@ -28,7 +28,7 @@ class ViewController: UIViewController {
   var colors: [UIColor] = []
 
   let ciContext = CIContext()
-  var resizedPixelBuffer: CVPixelBuffer?
+  var resizedPixelBuffers: [CVPixelBuffer?] = []
 
   var framesDone = 0
   var frameCapturingStartTime = CACurrentMediaTime()
@@ -74,11 +74,19 @@ class ViewController: UIViewController {
   }
 
   func setUpCoreImage() {
-    let status = CVPixelBufferCreate(nil, YOLO.inputWidth, YOLO.inputHeight,
-                                     kCVPixelFormatType_32BGRA, nil,
-                                     &resizedPixelBuffer)
-    if status != kCVReturnSuccess {
-      print("Error: could not create resized pixel buffer", status)
+    // Since we might be running several requests in parallel, we also need
+    // to do the resizing in different pixel buffers or we might overwrite a
+    // pixel buffer that's already in use.
+    for _ in 0..<YOLO.maxBoundingBoxes {
+      var resizedPixelBuffer: CVPixelBuffer?
+      let status = CVPixelBufferCreate(nil, YOLO.inputWidth, YOLO.inputHeight,
+                                       kCVPixelFormatType_32BGRA, nil,
+                                       &resizedPixelBuffer)
+
+      if status != kCVReturnSuccess {
+        print("Error: could not create resized pixel buffer", status)
+      }
+      resizedPixelBuffers.append(resizedPixelBuffer)
     }
   }
 
@@ -141,41 +149,42 @@ class ViewController: UIViewController {
 
   func predict(image: UIImage) {
     if let pixelBuffer = image.pixelBuffer(width: YOLO.inputWidth, height: YOLO.inputHeight) {
-      predict(pixelBuffer: pixelBuffer)
+      predict(pixelBuffer: pixelBuffer, inflightIndex: 0)
     }
   }
 
-  func predict(pixelBuffer: CVPixelBuffer) {
+  func predict(pixelBuffer: CVPixelBuffer, inflightIndex: Int) {
     // Measure how long it takes to predict a single video frame.
     let startTime = CACurrentMediaTime()
-
-    // Resize the input with Core Image to 416x416.
-    guard let resizedPixelBuffer = resizedPixelBuffer else { return }
-    let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
-    let sx = CGFloat(YOLO.inputWidth) / CGFloat(CVPixelBufferGetWidth(pixelBuffer))
-    let sy = CGFloat(YOLO.inputHeight) / CGFloat(CVPixelBufferGetHeight(pixelBuffer))
-    let scaleTransform = CGAffineTransform(scaleX: sx, y: sy)
-    let scaledImage = ciImage.transformed(by: scaleTransform)
-    ciContext.render(scaledImage, to: resizedPixelBuffer)
 
     // This is an alternative way to resize the image (using vImage):
     //if let resizedPixelBuffer = resizePixelBuffer(pixelBuffer,
     //                                              width: YOLO.inputWidth,
-    //                                              height: YOLO.inputHeight)
+    //                                              height: YOLO.inputHeight) {
 
-    // Give the resized input to our model.
-    if let result = try? yolo.predict(image: resizedPixelBuffer),
-       let boundingBoxes = result {
-      let elapsed = CACurrentMediaTime() - startTime
-      showOnMainThread(boundingBoxes, elapsed)
-    } else {
-      print("BOGUS")
+    // Resize the input with Core Image to 416x416.
+    if let resizedPixelBuffer = resizedPixelBuffers[inflightIndex] {
+      let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
+      let sx = CGFloat(YOLO.inputWidth) / CGFloat(CVPixelBufferGetWidth(pixelBuffer))
+      let sy = CGFloat(YOLO.inputHeight) / CGFloat(CVPixelBufferGetHeight(pixelBuffer))
+      let scaleTransform = CGAffineTransform(scaleX: sx, y: sy)
+      let scaledImage = ciImage.transformed(by: scaleTransform)
+      ciContext.render(scaledImage, to: resizedPixelBuffer)
+
+      // Give the resized input to our model.
+      if let result = try? yolo.predict(image: resizedPixelBuffer),
+         let boundingBoxes = result {
+        let elapsed = CACurrentMediaTime() - startTime
+        showOnMainThread(boundingBoxes, elapsed)
+      } else {
+        print("BOGUS")
+      }
     }
 
     self.semaphore.signal()
   }
 
-  func predictUsingVision(pixelBuffer: CVPixelBuffer) {
+  func predictUsingVision(pixelBuffer: CVPixelBuffer, inflightIndex: Int) {
     // Measure how long it takes to predict a single video frame. Note that
     // predict() can be called on the next frame while the previous one is
     // still being processed. Hence the need to queue up the start times.
@@ -183,15 +192,7 @@ class ViewController: UIViewController {
 
     // Vision will automatically resize the input image.
     let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer)
-    let request = requests[inflightBuffer]
-
-    // For better throughput, we want to schedule multiple Vision requests
-    // in parllel. These need to be separate instances, and inflightBuffer
-    // is the index of the current request object to use.
-    inflightBuffer += 1
-    if inflightBuffer >= ViewController.maxInflightBuffers {
-      inflightBuffer = 0
-    }
+    let request = requests[inflightIndex]
 
     // Because perform() will block until after the request completes, we
     // run it on a concurrent background queue, so that the next frame can
@@ -288,15 +289,24 @@ extension ViewController: VideoCaptureDelegate {
       // Core ML can't keep up with the camera.
       semaphore.wait()
 
+      // For better throughput, we want to schedule multiple prediction requests
+      // in parallel. These need to be separate instances, and inflightBuffer is
+      // the index of the current request.
+      let inflightIndex = inflightBuffer
+      inflightBuffer += 1
+      if inflightBuffer >= ViewController.maxInflightBuffers {
+        inflightBuffer = 0
+      }
+
       if useVision {
         // This method should always be called from the same thread!
         // Ain't nobody likes race conditions and crashes.
-        self.predictUsingVision(pixelBuffer: pixelBuffer)
+        self.predictUsingVision(pixelBuffer: pixelBuffer, inflightIndex: inflightIndex)
       } else {
         // For better throughput, perform the prediction on a concurrent
         // background queue instead of on the serial VideoCapture queue.
         DispatchQueue.global().async {
-          self.predict(pixelBuffer: pixelBuffer)
+          self.predict(pixelBuffer: pixelBuffer, inflightIndex: inflightIndex)
         }
       }
     }
