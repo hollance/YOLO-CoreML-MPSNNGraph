@@ -10,7 +10,14 @@ class ViewController: UIViewController {
   @IBOutlet weak var debugImageView: UIImageView!
 
   // true: use Vision to drive Core ML, false: use plain Core ML
-  let useVision = true
+  let useVision = false
+
+  // Disable this to see the energy impact of just running the neural net,
+  // otherwise it also counts the GPU activity of drawing the bounding boxes.
+  let drawBoundingBoxes = true
+
+  // How many predictions we can do concurrently.
+  static let maxInflightBuffers = 3
 
   let yolo = YOLO()
 
@@ -27,7 +34,6 @@ class ViewController: UIViewController {
   var framesDone = 0
   var frameCapturingStartTime = CACurrentMediaTime()
 
-  static let maxInflightBuffers = 3
   var inflightBuffer = 0
   let semaphore = DispatchSemaphore(value: ViewController.maxInflightBuffers)
 
@@ -210,16 +216,18 @@ class ViewController: UIViewController {
   }
 
   func showOnMainThread(_ boundingBoxes: [YOLO.Prediction], _ elapsed: CFTimeInterval) {
-    DispatchQueue.main.async {
-      // For debugging, to make sure the resized CVPixelBuffer is correct.
-      //var debugImage: CGImage?
-      //VTCreateCGImageFromCVPixelBuffer(resizedPixelBuffer, nil, &debugImage)
-      //self.debugImageView.image = UIImage(cgImage: debugImage!)
+    if drawBoundingBoxes {
+      DispatchQueue.main.async {
+        // For debugging, to make sure the resized CVPixelBuffer is correct.
+        //var debugImage: CGImage?
+        //VTCreateCGImageFromCVPixelBuffer(resizedPixelBuffer, nil, &debugImage)
+        //self.debugImageView.image = UIImage(cgImage: debugImage!)
 
-      self.show(predictions: boundingBoxes)
+        self.show(predictions: boundingBoxes)
 
-      let fps = self.measureFPS()
-      self.timeLabel.text = String(format: "Elapsed %.5f seconds - %.2f FPS", elapsed, fps)
+        let fps = self.measureFPS()
+        self.timeLabel.text = String(format: "Elapsed %.5f seconds - %.2f FPS", elapsed, fps)
+      }
     }
   }
 
