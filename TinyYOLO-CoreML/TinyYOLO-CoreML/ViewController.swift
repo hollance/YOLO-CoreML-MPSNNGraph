@@ -2,7 +2,6 @@ import UIKit
 import Vision
 import AVFoundation
 import CoreMedia
-import VideoToolbox
 
 class ViewController: UIViewController {
   @IBOutlet weak var videoPreview: UIView!
@@ -164,7 +163,7 @@ class ViewController: UIViewController {
     //                                              width: YOLO.inputWidth,
     //                                              height: YOLO.inputHeight)
 
-    // Give the resized input it to our model.
+    // Give the resized input to our model.
     if let result = try? yolo.predict(image: resizedPixelBuffer),
        let boundingBoxes = result {
       let elapsed = CACurrentMediaTime() - startTime
@@ -284,11 +283,11 @@ extension ViewController: VideoCaptureDelegate {
     // For debugging.
     //predict(image: UIImage(named: "dog416")!); return
 
-    // The semaphore will block the capture queue and drop frames when Core ML
-    // can't keep up with the camera.
-    semaphore.wait()
-
     if let pixelBuffer = pixelBuffer {
+      // The semaphore will block the capture queue and drop frames when
+      // Core ML can't keep up with the camera.
+      semaphore.wait()
+
       if useVision {
         // This method should always be called from the same thread!
         // Ain't nobody likes race conditions and crashes.
