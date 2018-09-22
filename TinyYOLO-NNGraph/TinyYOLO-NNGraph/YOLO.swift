@@ -85,6 +85,18 @@ class YOLO {
     let conv9 = MPSCNNConvolutionNode(source: conv8.resultImage,
                                       weights: DataSource("conv9", 1, 1, 1024, 125, useLeaky: false))
 
+    if #available(iOS 12.0, *) {
+      conv1.accumulatorPrecision = .half
+      conv2.accumulatorPrecision = .half
+      conv3.accumulatorPrecision = .half
+      conv4.accumulatorPrecision = .half
+      conv5.accumulatorPrecision = .half
+      conv6.accumulatorPrecision = .half
+      conv7.accumulatorPrecision = .half
+      conv8.accumulatorPrecision = .half
+      conv9.accumulatorPrecision = .half
+    }
+
     if let graph = MPSNNGraph(device: commandQueue.device,
                               resultImage: conv9.resultImage) {
       self.graph = graph
