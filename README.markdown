@@ -18,7 +18,9 @@ To run the app, just open the **xcodeproj** file in Xcode 9 and run it on a devi
 
 The reported "elapsed" time is how long it takes the YOLO neural net to process a single image. The FPS is the actual throughput achieved by the app.
 
-> **NOTE:** Running these kinds of neural networks eats up a lot of battery power. The app can put a limit on the number of times per second it runs the neural net. You can change this in `setUpCamera()` by changing the line `videoCapture.fps = 50` to a smaller number.
+> **NOTE:** Running these kinds of neural networks eats up a lot of battery power. To measure the maximum speed of the model, the `setUpCamera()` method in ViewController.swift configures the camera to run at 240 FPS, if available. In a real app, you'd use at most 30 FPS and possibly limit the number of times per second it runs the neural net to 15 or less (i.e. only process every other frame).
+
+> **NOTE:** As of iOS 12, Vision has built-in support for YOLO models. The big advantage is that these do the bounding box decoding and NMS inside the Core ML model, so all you need to do is pass in the image, and Vision will give you the results as one or more `VNRecognizedObjectObservation` objects. No more messing around with `MLMultiArray`s. It's also really easy to train such models using [Turi Create](https://github.com/apple/turicreate/tree/master/userguide/object_detection).
 
 ## Converting the models
 
