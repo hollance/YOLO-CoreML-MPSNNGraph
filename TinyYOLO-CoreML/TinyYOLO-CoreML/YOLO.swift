@@ -57,7 +57,7 @@ class YOLO {
     let yStride = features.strides[1].intValue
     let xStride = features.strides[2].intValue
 
-    func offset(_ channel: Int, _ x: Int, _ y: Int) -> Int {
+    @inline(__always) func offset(_ channel: Int, _ x: Int, _ y: Int) -> Int {
       return channel*channelStride + y*yStride + x*xStride
     }
 

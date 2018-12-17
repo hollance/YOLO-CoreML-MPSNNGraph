@@ -14,13 +14,27 @@ In this repo you'll find:
 - **TinyYOLO-NNGraph:** The same demo app but this time it uses the lower-level graph API from Metal Performance Shaders.
 - **Convert:** The scripts needed to convert the original DarkNet YOLO model to Core ML and MPS format.
 
-To run the app, just open the **xcodeproj** file in Xcode 9 and run it on a device with iOS 11 or better installed.
+To run the app, just open the **xcodeproj** file in Xcode 9 or later, and run it on a device with iOS 11 or better installed.
 
 The reported "elapsed" time is how long it takes the YOLO neural net to process a single image. The FPS is the actual throughput achieved by the app.
 
 > **NOTE:** Running these kinds of neural networks eats up a lot of battery power. To measure the maximum speed of the model, the `setUpCamera()` method in ViewController.swift configures the camera to run at 240 FPS, if available. In a real app, you'd use at most 30 FPS and possibly limit the number of times per second it runs the neural net to 15 or less (i.e. only process every other frame).
 
-> **NOTE:** As of iOS 12, Vision has built-in support for YOLO models. The big advantage is that these do the bounding box decoding and NMS inside the Core ML model, so all you need to do is pass in the image, and Vision will give you the results as one or more `VNRecognizedObjectObservation` objects. No more messing around with `MLMultiArray`s. It's also really easy to train such models using [Turi Create](https://github.com/apple/turicreate/tree/master/userguide/object_detection).
+Tip: Also check out [this repo for YOLO v3](https://github.com/Ma-Dan/YOLOv3-CoreML). It works the same as this repo, but uses the full version of YOLO v3!
+
+## iOS 12 and `VNRecognizedObjectObservation`
+
+The code in [my blog post](http://machinethink.net/blog/yolo-coreml-versus-mps-graph/) and this repo shows how take the `MLMultiArray` output from TinyYOLO and interpret it in your app. That was the only way to do it with iOS 11, but as of iOS 12 there is an easier solution.
+
+The Vision framework in iOS 12 directly supports YOLO-like models. The big advantage is that these do the bounding box decoding and non-maximum suppression (NMS) inside the Core ML model. All you need to do is pass in the image and Vision will give you the results as one or more `VNRecognizedObjectObservation` objects. No more messing around with `MLMultiArray`s. 
+
+It's also really easy to train such models using [Turi Create](https://github.com/apple/turicreate/tree/master/userguide/object_detection). It combines TinyYOLO v2 and the new `NonMaximumSuppression` model type into a so-called pipeline model.
+
+The good news is that this new Vision API also supports other object detection models! 
+
+I added a chapter to my book [Core ML Survival Guide](https://leanpub.com/coreml-survival-guide) that shows exactly how this works. In the book you’ll see how to add this same functionality to **MobileNetV2 + SSDLite**, so that you get `VNRecognizedObjectObservation` predictions for that model too. [The book](https://leanpub.com/coreml-survival) has lots of other great tips on using Core ML, so check it out! :smile:
+
+If you're not ready to go all-in on iOS 12 yet, then read on...
 
 ## Converting the models
 
