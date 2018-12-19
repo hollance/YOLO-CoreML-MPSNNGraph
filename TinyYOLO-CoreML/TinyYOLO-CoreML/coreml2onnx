@@ -1,0 +1,9 @@
+import onnxmltools
+import coremltools
+
+coreml_model = coremltools.utils.load_spec('TinyYOLO.mlmodel')
+
+onnx_model = onnxmltools.convert_coreml(coreml_model, 'TinyYOLO Model')
+
+onnxmltools.utils.save_model(onnx_model, 'TinyYOLO.onnx')
+

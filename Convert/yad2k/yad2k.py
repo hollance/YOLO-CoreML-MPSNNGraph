@@ -19,7 +19,7 @@ from keras.layers.advanced_activations import LeakyReLU
 from keras.layers.normalization import BatchNormalization
 from keras.models import Model
 from keras.regularizers import l2
-from keras.utils.visualize_util import plot
+# from keras.utils.visualize_util import plot
 
 from yad2k.models.keras_yolo import (space_to_depth_x2,
                                      space_to_depth_x2_output_shape)
@@ -262,9 +262,9 @@ def _main(args):
     if remaining_weights > 0:
         print('Warning: {} unused weights'.format(len(remaining_weights)))
 
-    if args.plot_model:
-        plot(model, to_file='{}.png'.format(output_root), show_shapes=True)
-        print('Saved model plot to {}.png'.format(output_root))
+    #if args.plot_model:
+    #    plot(model, to_file='{}.png'.format(output_root), show_shapes=True)
+    #    print('Saved model plot to {}.png'.format(output_root))
 
 
 if __name__ == '__main__':
