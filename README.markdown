@@ -32,7 +32,7 @@ It's also really easy to train such models using [Turi Create](https://github.co
 
 The good news is that this new Vision API also supports other object detection models! 
 
-I added a chapter to my book [Core ML Survival Guide](https://leanpub.com/coreml-survival-guide) that shows exactly how this works. In the book you’ll see how to add this same functionality to **MobileNetV2 + SSDLite**, so that you get `VNRecognizedObjectObservation` predictions for that model too. [The book](https://leanpub.com/coreml-survival) has lots of other great tips on using Core ML, so check it out! :smile:
+I added a chapter to my book [Core ML Survival Guide](https://leanpub.com/coreml-survival-guide) that shows exactly how this works. In the book you’ll see how to add this same functionality to **MobileNetV2 + SSDLite**, so that you get `VNRecognizedObjectObservation` predictions for that model too. [The book](https://leanpub.com/coreml-survival-guide) has lots of other great tips on using Core ML, so check it out! :smile:
 
 If you're not ready to go all-in on iOS 12 yet, then read on...
 
