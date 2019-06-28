@@ -6,7 +6,7 @@ import Accelerate
 // The labels for the 20 classes.
 let labels = [
     "aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat",
-    "chair", "cow", "diningtable", "dog", "horse", "motorbike", "person",
+    "chair", "cow", "table", "dog", "horse", "motorbike", "person",
     "pottedplant", "sheep", "sofa", "train", "tvmonitor"
 ]
 
