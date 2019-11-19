@@ -115,7 +115,7 @@ extension UIImage {
 
     let w = texture.width
     let h = texture.height
-    var bytes = texture.toUInt8Array(width: w, height: h, featureChannels: 1)
+    let bytes = texture.toUInt8Array(width: w, height: h, featureChannels: 1)
 
     var rgbaBytes = [UInt8](repeating: 0, count: w * h * 4)
     for i in 0..<bytes.count {

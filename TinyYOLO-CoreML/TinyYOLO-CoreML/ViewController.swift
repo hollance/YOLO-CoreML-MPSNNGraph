@@ -77,7 +77,7 @@ class ViewController: UIViewController {
     // Since we might be running several requests in parallel, we also need
     // to do the resizing in different pixel buffers or we might overwrite a
     // pixel buffer that's already in use.
-    for _ in 0..<YOLO.maxBoundingBoxes {
+    for _ in 0..<ViewController.maxInflightBuffers {
       var resizedPixelBuffer: CVPixelBuffer?
       let status = CVPixelBufferCreate(nil, YOLO.inputWidth, YOLO.inputHeight,
                                        kCVPixelFormatType_32BGRA, nil,
@@ -172,8 +172,7 @@ class ViewController: UIViewController {
       ciContext.render(scaledImage, to: resizedPixelBuffer)
 
       // Give the resized input to our model.
-      if let result = try? yolo.predict(image: resizedPixelBuffer),
-         let boundingBoxes = result {
+      if let boundingBoxes = yolo.predict(image: resizedPixelBuffer) {
         let elapsed = CACurrentMediaTime() - startTime
         showOnMainThread(boundingBoxes, elapsed)
       } else {

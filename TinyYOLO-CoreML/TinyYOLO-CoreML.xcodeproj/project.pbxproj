@@ -117,7 +117,7 @@
 				TargetAttributes = {
 					7BC25F9D1EF1B7D1002ECBBA = {
 						CreatedOnToolsVersion = 9.0;
-						LastSwiftMigration = 1000;
+						LastSwiftMigration = 1120;
 					};
 				};
 			};
@@ -305,7 +305,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "net.machinethink.TinyYOLO-CoreML";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -321,7 +321,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "net.machinethink.TinyYOLO-CoreML";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

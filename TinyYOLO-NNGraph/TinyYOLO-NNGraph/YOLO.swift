@@ -282,7 +282,8 @@ class YOLO {
 
         // This layer has batch normalization applied to it. The data for this
         // layer is stored as: [ weights | mean | variance | gamma | beta ].
-        data?.withUnsafeBytes { (ptr: UnsafePointer<Float>) -> Void in
+        data?.withUnsafeBytes { raw in
+          let ptr = raw.baseAddress!.assumingMemoryBound(to: Float.self)
           let weightsSize = outputFeatureChannels * kernelHeight * kernelWidth * inputFeatureChannels
           let mean = ptr.advanced(by: weightsSize)
           let variance = mean.advanced(by: outputFeatureChannels)
